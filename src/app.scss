@@ -29,7 +29,7 @@
       position: absolute;
       width: 100px;
       height: 100px;
-      background-color: #aaf;
+      background-color: #8a8; // 512+
       transition: top 0.2s, left 0.2s;
       line-height: 100px;
       font-size: 48px;
@@ -47,6 +47,21 @@
       }
       &.value-16 {
         background-color: #ffa;
+      }
+      &.value-32 {
+        background-color: #aa8;
+      }
+      &.value-64 {
+        background-color: #8a8;
+      }
+      &.value-128 {
+        background-color: #88a;
+      }
+      &.value-256 {
+        background-color: #a88;
+      }
+      &.value-512 {
+        background-color: #8a8;
       }
     }
   }

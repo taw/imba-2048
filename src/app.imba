@@ -6,39 +6,67 @@ tag App
     @slots = []
     for y in [0..3]
       for x in [0..3]
-        @slots.push({x: x, y: y, tile: null})
+        @slots.push({x: x, y: y, tile: null, key: Math.random()})
     @tiles = []
     add_tile
     add_tile
 
+  def move_to_slot(slot, tile)
+    slot:tile = tile
+    if tile
+      tile:x = slot:x
+      tile:y = slot:y
+
   def compact_slice(slice)
     let slots = slice.map(do |i| @slots[i])
     let tiles = slots.map(do |slot| slot:tile).filter(do |x| x)
-    return if tiles:length == 0
-
     for i in [0..3]
       if slots[i]:tile == tiles[i]
         continue
       @moved = true
-      slots[i]:tile = tiles[i]
-      if tiles[i]
-        tiles[i]:x = slots[i]:x
-        tiles[i]:y = slots[i]:y
-
+      move_to_slot slots[i], tiles[i]
     null
+
+  def merge_same(slice)
+    let slots = slice.map(do |i| @slots[i])
+    return unless slots:length >= 2
+    return unless slots[1]:tile
+
+    let t0 = slots[0]:tile
+    let t1 = slots[1]:tile
+
+    if t0:value == t1:value
+      t0:value *= 2
+      @moved = true
+      t1:deleted = true
+      slots[1]:tile = null
+      move_to_slot slots[0], t1
+      move_to_slot slots[0], t0
+      # Quick compact so we can try again
+      if slots[2]
+        move_to_slot slots[1], slots[2]:tile
+        slots[2]:tile = null
+      if slots[3]
+        move_to_slot slots[2], slots[3]:tile
+        slots[3]:tile = null
+
+    merge_same slice.slice(1)
 
   def move_slice(slice)
     compact_slice(slice)
-    # merge
+    merge_same(slice)
 
   def move(*slices)
     @moved = false
+    @deleteme = []
     for slice in slices
       move_slice(slice)
 
     let after_move = do
       add_tile
       @freeze = false
+      # This breaks css animations as imba does't have key
+      # @tiles = @tiles.filter(do |t| !t:deleted)
       Imba.commit
 
     if @moved
@@ -49,7 +77,7 @@ tag App
     @slots[y * 4 + x]:tile
 
   def add_tile
-    if @tiles:length == 16
+    if @tiles.filter(do |t| !t:deleted):length == 16
       console.log "BOARD FULL!"
       return # Game lost probably
     while true
@@ -88,7 +116,8 @@ tag App
           for slot in @slots
             <.slot css:top=(20 + 120 * slot:y) css:left=(20 + 120 * slot:x)>
           for tile in @tiles
-            <.tile .{"value-{tile:value}"} css:top=(20 + 120 * tile:y) css:left=(20 + 120 * tile:x)>
-              tile:value
+            unless tile:deleted
+              <.tile data-key=tile:key .{"value-{tile:value}"} css:top=(20 + 120 * tile:y) css:left=(20 + 120 * tile:x)>
+                tile:value
 
 Imba.mount <App>
