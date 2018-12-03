@@ -6,7 +6,7 @@ tag App
     @slots = []
     for y in [0..3]
       for x in [0..3]
-        @slots.push({x: x, y: y, tile: null, key: Math.random()})
+        @slots.push({x: x, y: y, tile: null})
     @tiles = []
     add_tile
     add_tile
@@ -65,8 +65,7 @@ tag App
     let after_move = do
       add_tile
       @freeze = false
-      # This breaks css animations as imba does't have key
-      # @tiles = @tiles.filter(do |t| !t:deleted)
+      @tiles = @tiles.filter(do |t| !t:deleted)
       Imba.commit
 
     if @moved
@@ -86,7 +85,7 @@ tag App
       let y = random_int(0, 3)
       if tile_at(x, y)
         continue
-      let tile = {x: x, y: y, value: value}
+      let tile = {x: x, y: y, value: value, key: Math.random()}
       @tiles.push(tile)
       @slots[y * 4 + x]:tile = tile
       break
@@ -117,7 +116,7 @@ tag App
             <.slot css:top=(20 + 120 * slot:y) css:left=(20 + 120 * slot:x)>
           for tile in @tiles
             unless tile:deleted
-              <.tile data-key=tile:key .{"value-{tile:value}"} css:top=(20 + 120 * tile:y) css:left=(20 + 120 * tile:x)>
+              <.tile@{tile:key} .{"value-{tile:value}"} css:top=(20 + 120 * tile:y) css:left=(20 + 120 * tile:x)>
                 tile:value
 
 Imba.mount <App>
