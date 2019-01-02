@@ -1,6 +1,6 @@
 # imba-2048
 
-2048 Game in Imba.
+2048 Game in Imba. [You can see in in action here](https://taw.github.io/imba-2048).
 
 ## Install dependencies
 
