@@ -11,6 +11,21 @@ tag App
     add_tile
     add_tile
 
+  # For css testing
+  def setup_all_colors
+    @tiles.push({x: 0, y: 0, value: 2, key: Math.random()})
+    @tiles.push({x: 1, y: 0, value: 4, key: Math.random()})
+    @tiles.push({x: 2, y: 0, value: 8, key: Math.random()})
+    @tiles.push({x: 3, y: 0, value: 16, key: Math.random()})
+    @tiles.push({x: 0, y: 1, value: 32, key: Math.random()})
+    @tiles.push({x: 1, y: 1, value: 64, key: Math.random()})
+    @tiles.push({x: 2, y: 1, value: 128, key: Math.random()})
+    @tiles.push({x: 3, y: 1, value: 256, key: Math.random()})
+    @tiles.push({x: 0, y: 2, value: 512, key: Math.random()})
+    @tiles.push({x: 1, y: 2, value: 1024, key: Math.random()})
+    @tiles.push({x: 2, y: 2, value: 2048, key: Math.random()})
+    @tiles.push({x: 3, y: 2, value: 4096, key: Math.random()})
+
   def move_to_slot(slot, tile)
     slot:tile = tile
     if tile
@@ -75,12 +90,15 @@ tag App
   def tile_at(x, y)
     @slots[y * 4 + x]:tile
 
+  def board_full
+    @tiles.filter(do |t| !t:deleted):length == 16
+
   def add_tile
-    if @tiles.filter(do |t| !t:deleted):length == 16
+    if board_full
       console.log "BOARD FULL!"
       return # Game lost probably
+    let value = Math.random() > 0.1 ? 2 : 4
     while true
-      let value = Math.random() > 0.1 ? 2 : 4
       let x = random_int(0, 3)
       let y = random_int(0, 3)
       if tile_at(x, y)
