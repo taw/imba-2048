@@ -8,8 +8,10 @@ tag App
       for x in [0..3]
         @slots.push({x: x, y: y, tile: null})
     @tiles = []
-    add_tile
-    add_tile
+    # add_tile
+    # add_tile
+
+    setup_all_colors
 
   # For css testing
   def setup_all_colors

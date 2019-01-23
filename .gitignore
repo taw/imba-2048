@@ -1,3 +1,4 @@
 node_modules
 dist/app.js
 dist/app.css
+shrinkwrap.yaml
